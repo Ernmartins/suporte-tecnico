@@ -1,1 +1,108 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SmartHelp - Abrir Ticket</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;background:#f5f7fa;padding:30px}
+    .box{max-width:700px;margin:0 auto;background:#fff;padding:24px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.08)}
+    label{display:block;margin-top:12px;font-weight:600}
+    input,textarea,select{width:100%;padding:10px;margin-top:6px;border-radius:8px;border:1px solid #ccc}
+    button{margin-top:18px;padding:12px 18px;border:none;border-radius:8px;background:#1a73e8;color:#fff;font-weight:700}
+    .small{font-size:13px;color:#444}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Portal SmartHelp — Abrir Ticket</h2>
+    <p class="small">Preencha o formulário com a descrição do problema.</p>
+
+    <form id="ticketForm">
+      <label>Nome</label>
+      <input id="nome" required />
+
+      <label>Email</label>
+      <input id="email" type="email" required />
+
+      <label>Tipo de Pedido</label>
+      <select id="categoria" required>
+        <option value="">Selecione...</option>
+        <option>Rede</option>
+        <option>Software</option>
+        <option>Hardware</option>
+        <option>Impressora</option>
+        <option>Outro</option>
+      </select>
+
+      <label>Prioridade</label>
+      <select id="prioridade" required>
+        <option value="">Selecione...</option>
+        <option>Baixa</option>
+        <option>Média</option>
+        <option>Alta</option>
+        <option>Urgente</option>
+      </select>
+
+      <label>Descrição</label>
+      <textarea id="descricao" rows="5" required></textarea>
+
+      <button type="submit">Enviar Ticket</button>
+    </form>
+
+    <div id="msg" style="margin-top:12px;"></div>
+  </div>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+
+  <script>
+    // ======= Cole aqui a config do teu Firebase (vai ao console e copia) =========
+    const firebaseConfig = {
+      apiKey: "COLOCA_AQUI",
+      authDomain: "SEU_PROJETO.firebaseapp.com",
+      projectId: "SEU_PROJETO",
+      // ... resto da config
+    };
+    // ===========================================================================
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // gera ID tipo TCK-YYYYMMDD-HHMMSS
+    function gerarId() {
+      const d = new Date();
+      const pad = n => n.toString().padStart(2,'0');
+      return 'TCK-' + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + '-' + pad(d.getHours()) + pad(d.getMinutes()) + pad(d.getSeconds());
+    }
+
+    document.getElementById('ticketForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const nome = document.getElementById('nome').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const categoria = document.getElementById('categoria').value;
+      const prioridade = document.getElementById('prioridade').value;
+      const descricao = document.getElementById('descricao').value.trim();
+
+      const id = gerarId();
+      try {
+        await db.collection('tickets').doc(id).set({
+          id: id,
+          criadoEm: firebase.firestore.FieldValue.serverTimestamp(),
+          nome, email, categoria, prioridade, descricao,
+          estado: 'Aberto',
+          tecnico: '',
+          notas: ''
+        });
+        document.getElementById('msg').innerText = 'Ticket criado com sucesso! ID: ' + id;
+        this.reset();
+      } catch (err) {
+        console.error(err);
+        document.getElementById('msg').innerText = 'Erro ao criar ticket: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
 
