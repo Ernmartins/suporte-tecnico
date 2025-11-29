@@ -1,53 +1,219 @@
+<!-- index.html - Portal de Cliente com Firebase (VERSÃO MELHORADA) -->
 <!DOCTYPE html>
-<html>
+<html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <title>Abertura de Ticket</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal de Suporte - Criar Ticket</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(135deg, #1a73e8, #4d9ef8);
+      padding: 40px 0;
+    }
+
+    .container {
+      width: 95%;
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 35px;
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 28px;
+      color: #1a73e8;
+      margin-bottom: 10px;
+    }
+
+    p.subtitle {
+      text-align: center;
+      color: #555;
+      margin-bottom: 30px;
+      font-size: 15px;
+    }
+
+    label {
+      font-weight: 600;
+      margin-top: 18px;
+      display: block;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-top: 6px;
+      font-size: 15px;
+      transition: 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #1a73e8;
+      outline: none;
+      box-shadow: 0 0 6px rgba(26,115,232,0.3);
+    }
+
+    textarea {
+      height: 130px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 30px;
+      padding: 15px;
+      background: #1a73e8;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      cursor: pointer;
+      transition: 0.3s;
+      font-weight: 600;
+    }
+
+    button:hover {
+      background: #155dc1;
+    }
+  </style>
 </head>
 <body>
 
-<h2>Abrir Novo Ticket</h2>
+  <div class="container">
+    <h1>📨 Abrir Ticket de Suporte</h1>
+    <p class="subtitle">Preencha os dados abaixo para reportar um problema</p>
 
-<form id="ticketForm">
-  <input type="text" id="nome" placeholder="Seu nome" required><br>
-  <textarea id="problema" placeholder="Descreva o problema" required></textarea><br>
-  <button type="submit">Enviar Ticket</button>
-</form>
+    <form id="ticketForm">
+      <label>Nome</label>
+      <input type="text" id="nome" placeholder="O seu nome" required>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+      <label>Email</label>
+      <input type="email" id="email" placeholder="O seu email" required>
 
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyAJe1ZqvaNG0y04PCU3PkUU2XebbI86lt4",
-    authDomain: "ticket-helpdesk-a2dd8.firebaseapp.com",
-    projectId: "ticket-helpdesk-a2dd8",
-    storageBucket: "ticket-helpdesk-a2dd8.firebasestorage.app",
-    messagingSenderId: "464766886414",
-    appId: "1:464766886414:web:cd689936d78102b04b525f",
-    measurementId: "G-9N8M2GXWMD"
-  };
+      <label>Telefone</label>
+      <input type="text" id="telefone" placeholder="Contacto (opcional)">
 
-  const app = firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+      <label>Tipo de Pedido</label>
+      <select id="categoria" required>
+        <option value="">Selecione...</option>
+        <option>Erro técnico</option>
+        <option>Pedido administrativo</option>
+        <option>Falha de equipamento</option>
+        <option>Outro</option>
+      </select>
 
-  // enviar ticket
-  document.getElementById("ticketForm").addEventListener("submit", async (e) => {
-    e.preventDefault();
+      <label>Prioridade</label>
+      <select id="prioridade" required>
+        <option value="">Selecione...</option>
+        <option>Baixa</option>
+        <option>Média</option>
+        <option>Alta</option>
+        <option>Urgente</option>
+      </select>
 
-    const nome = document.getElementById("nome").value;
-    const problema = document.getElementById("problema").value;
+      <label>Descrição do Problema</label>
+      <textarea id="descricao" placeholder="Explique o problema com detalhes" required></textarea>
 
-    await db.collection("tickets").add({
-      nome: nome,
-      problema: problema,
-      data: new Date()
+      <button type="submit">Enviar Ticket</button>
+    </form>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAJe1ZqvaNG0y04PCU3PkUU2XebbI86lt4",
+      authDomain: "ticket-helpdesk-a2dd8.firebaseapp.com",
+      projectId: "ticket-helpdesk-a2dd8",
+      storageBucket: "ticket-helpdesk-a2dd8.firebasestorage.app",
+      messagingSenderId: "464766886414",
+      appId: "1:464766886414:web:cd689936d78102b04b525f",
+      measurementId: "G-9N8M2GXWMD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.getElementById("ticketForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      await addDoc(collection(db, "tickets"), {
+        nome: nome.value,
+        email: email.value,
+        telefone: telefone.value,
+        categoria: categoria.value,
+        prioridade: prioridade.value,
+        descricao: descricao.value,
+        estado: "Aberto",
+        data: new Date()
+      });
+
+      alert("Ticket enviado com sucesso!");
+      document.getElementById("ticketForm").reset();
     });
-
-    alert("Ticket enviado!");
-    document.getElementById("ticketForm").reset();
-  });
-</script>
+  </script>
 
 </body>
 </html>
+
+<!-- admin.html - Página do Técnico -->
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Tickets</title>
+</head>
+<body>
+  <h1>Lista de Tickets</h1>
+  <div id="lista"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAJe1ZqvaNG0y04PCU3PkUU2XebbI86lt4",
+      authDomain: "ticket-helpdesk-a2dd8.firebaseapp.com",
+      projectId: "ticket-helpdesk-a2dd8",
+      storageBucket: "ticket-helpdesk-a2dd8.firebasestorage.app",
+      messagingSenderId: "464766886414",
+      appId: "1:464766886414:web:cd689936d78102b04b525f",
+      measurementId: "G-9N8M2GXWMD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    async function carregarTickets() {
+      const lista = document.getElementById("lista");
+      lista.innerHTML = "A carregar...";
+
+      const querySnapshot = await getDocs(collection(db, "tickets"));
+
+      lista.innerHTML = "";
+      querySnapshot.forEach((doc) => {
+        const t = doc.data();
+        lista.innerHTML += `<p><b>${t.nome}</b> — ${t.descricao} — <i>${t.estado}</i></p>`;
+      });
+    }
+
+    carregarTickets();
+  </script>
+
+</body>
+</html>
+
