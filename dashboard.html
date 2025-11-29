@@ -1,1 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+<header>📊 Dashboard de Tickets</header>
+
+<div class="container">
+  <h2>Tickets por Categoria</h2>
+  <canvas id="catChart"></canvas>
+</div>
+
+<div class="container">
+  <h2>Tickets por Prioridade</h2>
+  <canvas id="prioChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script type="module">
+import { firebaseConfig } from "./firebase.js";
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+async function gerarDashboard() {
+  const snap = await getDocs(collection(db, "tickets"));
+
+  let categorias = {};
+  let prioridades = {};
+
+  snap.forEach(d => {
+    let t = d.data();
+
+    categorias[t.categoria] = (categorias[t.categoria] || 0) + 1;
+    prioridades[t.prioridade] = (prioridades[t.prioridade] || 0) + 1;
+  });
+
+  new Chart(catChart, {
+    type: "bar",
+    data: {
+      labels: Object.keys(categorias),
+      datasets: [{
+        label: "Tickets",
+        data: Object.values(categorias),
+        backgroundColor: "#1a73e8"
+      }]
+    }
+  });
+
+  new Chart(prioChart, {
+    type: "pie",
+    data: {
+      labels: Object.keys(prioridades),
+      datasets: [{
+        data: Object.values(prioridades),
+        backgroundColor: ["#4CAF50","#FFC107","#FF5722","#9C27B0"]
+      }]
+    }
+  });
+}
+
+gerarDashboard();
+</script>
+
+</body>
+</html>
 
