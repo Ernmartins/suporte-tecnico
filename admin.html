@@ -1,75 +1,94 @@
-<script type="module">
-import { firebaseConfig } from "./firebase.js";
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Técnico – SmartHelp</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 
-import { 
-  initializeApp 
-} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+<body>
 
-import { 
-  getFirestore, collection, getDocs, doc, updateDoc 
-} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+<header>📋 Painel Técnico - Gestão de Tickets</header>
 
-// Iniciar Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+<div class="container">
+  <h2>Lista de Tickets</h2>
 
-async function carregarTickets() {
-  const tbody = document.querySelector("#tabelaTickets tbody");
-  tbody.innerHTML = "<tr><td colspan='6'>A carregar...</td></tr>";
-
-  const snap = await getDocs(collection(db, "tickets"));
-  tbody.innerHTML = "";
-
-  snap.forEach((documento) => {
-    const t = documento.data();
-    const idDoc = documento.id; // ID REAL DO FIRESTORE
-
-    const estadoClasse =
-      t.estado === "Aberto" ? "aberto" :
-      t.estado === "Em andamento" ? "andamento" :
-      t.estado === "Resolvido" ? "resolvido" :
-      "fechado";
-
-    tbody.innerHTML += `
+  <table id="tabelaTickets">
+    <thead>
       <tr>
-        <td>${t.id}</td>
-        <td>${t.nome}</td>
-        <td>${t.categoria}</td>
-        <td>${t.prioridade}</td>
-
-        <td>
-          <select class="estadoSelect" data-id="${idDoc}">
-            <option ${t.estado === "Aberto" ? "selected" : ""}>Aberto</option>
-            <option ${t.estado === "Em andamento" ? "selected" : ""}>Em andamento</option>
-            <option ${t.estado === "Resolvido" ? "selected" : ""}>Resolvido</option>
-            <option ${t.estado === "Fechado" ? "selected" : ""}>Fechado</option>
-          </select>
-        </td>
-
-        <td>${t.descricao}</td>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Categoria</th>
+        <th>Prioridade</th>
+        <th>Estado</th>
+        <th>Ações</th>
       </tr>
-    `;
-  });
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 
-  // Ativar eventos nos dropdowns
-  ativarListenersEstado();
-}
+<script type="module">
+  import { firebaseConfig } from "./firebase.js";
 
-function ativarListenersEstado() {
-  document.querySelectorAll(".estadoSelect").forEach((select) => {
-    select.addEventListener("change", async (e) => {
-      const novoEstado = e.target.value;
-      const docID = e.target.getAttribute("data-id");
+  import {
+    initializeApp
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 
-      const ref = doc(db, "tickets", docID);
-      await updateDoc(ref, { estado: novoEstado });
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    updateDoc,
+    doc
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-      alert("Estado atualizado para: " + novoEstado);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function carregarTickets() {
+    const tbody = document.querySelector("#tabelaTickets tbody");
+    tbody.innerHTML = "<tr><td colspan='6'>A carregar...</td></tr>";
+
+    const querySnapshot = await getDocs(collection(db, "tickets"));
+    tbody.innerHTML = "";
+
+    querySnapshot.forEach((documento) => {
+      const t = documento.data();
+      const refID = documento.id; // ID real do Firestore
+
+      const linha = `
+        <tr>
+          <td>${t.id}</td>
+          <td>${t.nome}</td>
+          <td>${t.categoria}</td>
+          <td>${t.prioridade}</td>
+          <td><span class="estado ${t.estado.toLowerCase()}">${t.estado}</span></td>
+          <td>
+            <button onclick="fecharTicket('${refID}')">Fechar</button>
+          </td>
+        </tr>
+      `;
+      tbody.innerHTML += linha;
     });
-  });
-}
+  }
 
-// Carregar tabela ao abrir a página
-carregarTickets();
+  window.fecharTicket = async function(refID) {
+    if (!confirm("Tem a certeza que deseja fechar este ticket?")) return;
+
+    const ticketRef = doc(db, "tickets", refID);
+
+    await updateDoc(ticketRef, {
+      estado: "Fechado"
+    });
+
+    alert("Ticket fechado!");
+    carregarTickets();
+  }
+
+  carregarTickets();
 </script>
 
+</body>
+</html>
