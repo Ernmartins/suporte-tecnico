@@ -2,30 +2,15 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard – SmartHelp</title>
-
-  <link rel="stylesheet" href="style.css">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
-
-<header>📊 Dashboard – Estatísticas dos Tickets</header>
-
 <div class="container">
-  <h2>Tickets por Categoria</h2>
-  <canvas id="chartCategorias"></canvas>
-</div>
-
-<div class="container">
-  <h2>Tickets por Prioridade</h2>
-  <canvas id="chartPrioridade"></canvas>
-</div>
-
-<div class="container">
-  <h2>Tickets por Estado</h2>
-  <canvas id="chartEstado"></canvas>
+  <h1>📊 Dashboard</h1>
+  <canvas id="grafico1"></canvas>
 </div>
 
 <script type="module">
@@ -36,60 +21,27 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  async function gerarDashboard() {
-    const snap = await getDocs(collection(db, "tickets"));
+  const snap = await getDocs(collection(db, "tickets"));
 
-    let categorias = {};
-    let prioridades = {};
-    let estados = {};
+  let abertos = 0, andamento = 0, resolvidos = 0;
 
-    snap.forEach(doc => {
-      const t = doc.data();
+  snap.forEach(doc => {
+    const estado = doc.data().estado;
+    if (estado === "Aberto") abertos++;
+    if (estado === "Em andamento") andamento++;
+    if (estado === "Resolvido") resolvidos++;
+  });
 
-      categorias[t.categoria] = (categorias[t.categoria] || 0) + 1;
-      prioridades[t.prioridade] = (prioridades[t.prioridade] || 0) + 1;
-      estados[t.estado] = (estados[t.estado] || 0) + 1;
-    });
-
-    // Criar gráficos
-    new Chart(document.getElementById("chartCategorias"), {
-      type: "bar",
-      data: {
-        labels: Object.keys(categorias),
-        datasets: [{
-          label: "Tickets",
-          data: Object.values(categorias),
-          backgroundColor: "#38bdf8"
-        }]
-      }
-    });
-
-    new Chart(document.getElementById("chartPrioridade"), {
-      type: "pie",
-      data: {
-        labels: Object.keys(prioridades),
-        datasets: [{
-          data: Object.values(prioridades),
-          backgroundColor: ["#4ade80", "#facc15", "#f87171", "#38bdf8"]
-        }]
-      }
-    });
-
-    new Chart(document.getElementById("chartEstado"), {
-      type: "doughnut",
-      data: {
-        labels: Object.keys(estados),
-        datasets: [{
-          data: Object.values(estados),
-          backgroundColor: ["#f87171", "#facc15", "#4ade80"]
-        }]
-      }
-    });
-
-  }
-
-  gerarDashboard();
+  new Chart(document.getElementById("grafico1"), {
+    type: "pie",
+    data: {
+      labels: ["Abertos", "Em andamento", "Resolvidos"],
+      datasets: [{
+        data: [abertos, andamento, resolvidos],
+        backgroundColor: ["#f87171", "#facc15", "#4ade80"]
+      }]
+    }
+  });
 </script>
-
 </body>
 </html>
