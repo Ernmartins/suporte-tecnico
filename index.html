@@ -1,90 +1,43 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SmartHelp - Abrir Ticket</title>
+<script type="module">
+import { firebaseConfig } from "./firebase.js";
 
-  <link rel="stylesheet" href="styles.css">
-</head>
+import { 
+  initializeApp 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 
-<body>
+import { 
+  getFirestore, collection, addDoc, getDocs 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-  <div class="container">
-    <h1>📨 SmartHelp</h1>
-    <p class="subtitle">Submeta o seu pedido de suporte</p>
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-    <form id="ticketForm">
-      <label>Nome</label>
-      <input id="nome" required>
+document.getElementById("ticketForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-      <label>Email</label>
-      <input id="email" type="email" required>
+  // 1) Buscar número atual de tickets
+  const snap = await getDocs(collection(db, "tickets"));
+  const total = snap.size + 1;
 
-      <label>Telefone</label>
-      <input id="telefone">
+  // 2) Criar ID automático formatado
+  const ticketID = "TCK-" + String(total).padStart(4, '0');
 
-      <label>Categoria</label>
-      <select id="categoria" required>
-        <option value="">Selecione…</option>
-        <option>Erro técnico</option>
-        <option>Falha de equipamento</option>
-        <option>Pedido administrativo</option>
-        <option>Outro</option>
-      </select>
+  // 3) Guardar no Firestore
+  await addDoc(collection(db, "tickets"), {
+    id: ticketID,
+    nome: nome.value,
+    email: email.value,
+    telefone: telefone.value,
+    categoria: categoria.value,
+    prioridade: prioridade.value,
+    descricao: descricao.value,
+    estado: "Aberto",
+    data: new Date()
+  });
 
-      <label>Prioridade</label>
-      <select id="prioridade" required>
-        <option value="">Selecione…</option>
-        <option>Baixa</option>
-        <option>Média</option>
-        <option>Alta</option>
-        <option>Urgente</option>
-      </select>
+  alert("Ticket enviado com sucesso!\nO seu ID é: " + ticketID);
 
-      <label>Descrição</label>
-      <textarea id="descricao" required></textarea>
+  document.getElementById("ticketForm").reset();
+});
+</script>
 
-      <button type="submit">Enviar Ticket</button>
-    </form>
-  </div>
-
-  <!-- FIREBASE -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAJe1ZqvaNG0y04PCU3PkUU2XebbI86lt4",
-      authDomain: "ticket-helpdesk-a2dd8.firebaseapp.com",
-      projectId: "ticket-helpdesk-a2dd8",
-      storageBucket: "ticket-helpdesk-a2dd8.firebasestorage.app",
-      messagingSenderId: "464766886414",
-      appId: "1:464766886414:web:cd689936d78102b04b525f",
-      measurementId: "G-9N8M2GXWMD"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    document.getElementById("ticketForm").addEventListener("submit", async(e)=>{
-      e.preventDefault();
-
-      await addDoc(collection(db, "tickets"), {
-        nome: nome.value,
-        email: email.value,
-        telefone: telefone.value,
-        categoria: categoria.value,
-        prioridade: prioridade.value,
-        descricao: descricao.value,
-        estado: "Aberto",
-        data: new Date()
-      });
-
-      alert("✔ Ticket enviado com sucesso!");
-      e.target.reset();
-    });
-  </script>
-
-</body>
-</html>
