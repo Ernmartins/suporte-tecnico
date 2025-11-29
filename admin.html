@@ -1,108 +1,46 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>SmartHelp - Admin</title>
-  <style>
-    body{font-family:Arial;padding:20px;background:#eef2f7}
-    .wrap{max-width:1000px;margin:0 auto}
-    .login, .panel{background:#fff;padding:18px;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06);margin-bottom:16px}
-    table{width:100%;border-collapse:collapse}
-    th,td{padding:8px;border-bottom:1px solid #eee;text-align:left}
-    button{padding:6px 10px;border-radius:6px;border:0;background:#1a73e8;color:#fff}
-  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin - Tickets</title>
 </head>
 <body>
-  <div class="wrap">
-    <div class="login" id="loginBox">
-      <h3>Login Técnico</h3>
-      <input id="email" placeholder="Email" /><br/><br/>
-      <input id="password" type="password" placeholder="Senha" /><br/><br/>
-      <button id="btnLogin">Entrar</button>
-      <div id="loginMsg"></div>
-    </div>
+  <h1>Lista de Tickets</h1>
+  <div id="lista"></div>
 
-    <div class="panel" id="adminPanel" style="display:none">
-      <h3>Dashboard de Tickets</h3>
-      <button id="btnLogout">Logout</button>
-      <table id="tbl">
-        <thead><tr><th>ID</th><th>Nome</th><th>Categoria</th><th>Prioridade</th><th>Estado</th><th>Ações</th></tr></thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-  </div>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-
-  <script>
-    // ======= mesma config do Firebase ========
     const firebaseConfig = {
-      apiKey: "COLOCA_AQUI",
-      authDomain: "SEU_PROJETO.firebaseapp.com",
-      projectId: "SEU_PROJETO",
-    };
-    // =========================================
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.firestore();
-
-    const loginBox = document.getElementById('loginBox');
-    const adminPanel = document.getElementById('adminPanel');
-
-    document.getElementById('btnLogin').onclick = async () => {
-      const email = document.getElementById('email').value;
-      const pass = document.getElementById('password').value;
-      try {
-        await auth.signInWithEmailAndPassword(email, pass);
-        document.getElementById('loginMsg').innerText = 'Login OK';
-      } catch (e) {
-        document.getElementById('loginMsg').innerText = 'Erro: ' + e.message;
-      }
+      apiKey: "AIzaSyAJe1ZqvaNG0y04PCU3PkUU2XebbI86lt4",
+      authDomain: "ticket-helpdesk-a2dd8.firebaseapp.com",
+      projectId: "ticket-helpdesk-a2dd8",
+      storageBucket: "ticket-helpdesk-a2dd8.firebasestorage.app",
+      messagingSenderId: "464766886414",
+      appId: "1:464766886414:web:cd689936d78102b04b525f",
+      measurementId: "G-9N8M2GXWMD"
     };
 
-    document.getElementById('btnLogout').onclick = () => auth.signOut();
-
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        loginBox.style.display = 'none';
-        adminPanel.style.display = 'block';
-        carregarTickets();
-      } else {
-        loginBox.style.display = 'block';
-        adminPanel.style.display = 'none';
-      }
-    });
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
     async function carregarTickets() {
-      const tbody = document.getElementById('tbody');
-      tbody.innerHTML = '';
-      const snapshot = await db.collection('tickets').orderBy('criadoEm','desc').limit(200).get();
-      snapshot.forEach(doc => {
-        const d = doc.data();
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${d.id}</td>
-          <td>${d.nome}</td>
-          <td>${d.categoria}</td>
-          <td>${d.prioridade}</td>
-          <td>${d.estado}</td>
-          <td>
-            <button onclick="atualizar('${d.id}','Em análise')">Em análise</button>
-            <button onclick="atualizar('${d.id}','A aguardar utilizador')">A aguardar</button>
-            <button onclick="atualizar('${d.id}','Resolvido')">Resolvido</button>
-          </td>`;
-        tbody.appendChild(tr);
+      const lista = document.getElementById("lista");
+      lista.innerHTML = "A carregar...";
+
+      const querySnapshot = await getDocs(collection(db, "tickets"));
+
+      lista.innerHTML = "";
+      querySnapshot.forEach((doc) => {
+        const t = doc.data();
+        lista.innerHTML += `<p><b>${t.nome}</b> — ${t.descricao} — <i>${t.estado}</i></p>`;
       });
     }
 
-    window.atualizar = async (id, novoEstado) => {
-      // find doc by id field (doc id is same as id)
-      const ref = db.collection('tickets').doc(id);
-      await ref.update({ estado: novoEstado, tecnico: firebase.auth().currentUser.email });
-      carregarTickets();
-    };
+    carregarTickets();
   </script>
+
 </body>
 </html>
