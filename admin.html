@@ -1,81 +1,75 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Técnico – SmartHelp</title>
-
-  <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-
-<header>📋 Painel do Técnico – Tickets Recebidos</header>
-
-<div class="container">
-  <h2>Lista de Tickets</h2>
-
-  <table id="tabelaTickets">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nome</th>
-        <th>Categoria</th>
-        <th>Prioridade</th>
-        <th>Estado</th>
-        <th>Descrição</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
-
 <script type="module">
-  import { firebaseConfig } from "./firebase.js";
+import { firebaseConfig } from "./firebase.js";
 
-  import {
-    initializeApp
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+import { 
+  initializeApp 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 
-  import {
-    getFirestore, collection, getDocs
-  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { 
+  getFirestore, collection, getDocs, doc, updateDoc 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+// Iniciar Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  async function carregarTickets() {
-    const tbody = document.querySelector("#tabelaTickets tbody");
-    tbody.innerHTML = "<tr><td colspan='6'>A carregar...</td></tr>";
+async function carregarTickets() {
+  const tbody = document.querySelector("#tabelaTickets tbody");
+  tbody.innerHTML = "<tr><td colspan='6'>A carregar...</td></tr>";
 
-    const querySnapshot = await getDocs(collection(db, "tickets"));
-    tbody.innerHTML = "";
+  const snap = await getDocs(collection(db, "tickets"));
+  tbody.innerHTML = "";
 
-    querySnapshot.forEach((doc) => {
-      const t = doc.data();
+  snap.forEach((documento) => {
+    const t = documento.data();
+    const idDoc = documento.id; // ID REAL DO FIRESTORE
 
-      const estadoClasse =
-        t.estado === "Aberto" ? "aberto" :
-        t.estado === "Em andamento" ? "andamento" :
-        "resolvido";
+    const estadoClasse =
+      t.estado === "Aberto" ? "aberto" :
+      t.estado === "Em andamento" ? "andamento" :
+      t.estado === "Resolvido" ? "resolvido" :
+      "fechado";
 
-      const linha = `
-        <tr>
-          <td>${t.id}</td>
-          <td>${t.nome}</td>
-          <td>${t.categoria}</td>
-          <td>${t.prioridade}</td>
-          <td><span class="estado ${estadoClasse}">${t.estado}</span></td>
-          <td>${t.descricao}</td>
-        </tr>
-      `;
+    tbody.innerHTML += `
+      <tr>
+        <td>${t.id}</td>
+        <td>${t.nome}</td>
+        <td>${t.categoria}</td>
+        <td>${t.prioridade}</td>
 
-      tbody.innerHTML += linha;
+        <td>
+          <select class="estadoSelect" data-id="${idDoc}">
+            <option ${t.estado === "Aberto" ? "selected" : ""}>Aberto</option>
+            <option ${t.estado === "Em andamento" ? "selected" : ""}>Em andamento</option>
+            <option ${t.estado === "Resolvido" ? "selected" : ""}>Resolvido</option>
+            <option ${t.estado === "Fechado" ? "selected" : ""}>Fechado</option>
+          </select>
+        </td>
+
+        <td>${t.descricao}</td>
+      </tr>
+    `;
+  });
+
+  // Ativar eventos nos dropdowns
+  ativarListenersEstado();
+}
+
+function ativarListenersEstado() {
+  document.querySelectorAll(".estadoSelect").forEach((select) => {
+    select.addEventListener("change", async (e) => {
+      const novoEstado = e.target.value;
+      const docID = e.target.getAttribute("data-id");
+
+      const ref = doc(db, "tickets", docID);
+      await updateDoc(ref, { estado: novoEstado });
+
+      alert("Estado atualizado para: " + novoEstado);
     });
-  }
+  });
+}
 
-  carregarTickets();
+// Carregar tabela ao abrir a página
+carregarTickets();
 </script>
 
-</body>
-</html>
