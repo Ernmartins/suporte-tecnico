@@ -1,1 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="styles.css">
+  <title>Consultar Ticket</title>
+</head>
+
+<body>
+<div class="container">
+  <h1>🔍 Consultar Ticket</h1>
+
+  <label>Introduza o ID do Ticket</label>
+  <input type="text" id="ticketID" placeholder="Ex: TCK-0004">
+
+  <button onclick="procurar()">Procurar</button>
+
+  <div id="resultado" style="margin-top:20px;"></div>
+</div>
+
+<script type="module">
+import { firebaseConfig } from "./firebase.js";
+
+import { 
+  initializeApp 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+
+import { 
+  getFirestore, collection, getDocs 
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.procurar = async function () {
+  const id = document.getElementById("ticketID").value.trim();
+  const div = document.getElementById("resultado");
+  div.innerHTML = "A procurar...";
+
+  const snap = await getDocs(collection(db, "tickets"));
+
+  let encontrado = null;
+  snap.forEach(doc => {
+    if (doc.data().id === id) encontrado = doc.data();
+  });
+
+  if (!encontrado) {
+    div.innerHTML = "<p style='color:red;'>❌ Ticket não encontrado.</p>";
+    return;
+  }
+
+  div.innerHTML = `
+    <h3>Resultado</h3>
+    <p><b>ID:</b> ${encontrado.id}</p>
+    <p><b>Nome:</b> ${encontrado.nome}</p>
+    <p><b>Estado:</b> ${encontrado.estado}</p>
+    <p><b>Categoria:</b> ${encontrado.categoria}</p>
+    <p><b>Prioridade:</b> ${encontrado.prioridade}</p>
+    <p><b>Descrição:</b> ${encontrado.descricao}</p>
+  `;
+};
+</script>
+
+</body>
+</html>
 
