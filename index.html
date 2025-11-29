@@ -15,14 +15,11 @@ const db = getFirestore(app);
 document.getElementById("ticketForm").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  // 1) Buscar número atual de tickets
+  // Criar ID automático
   const snap = await getDocs(collection(db, "tickets"));
   const total = snap.size + 1;
-
-  // 2) Criar ID automático formatado
   const ticketID = "TCK-" + String(total).padStart(4, '0');
 
-  // 3) Guardar no Firestore
   await addDoc(collection(db, "tickets"), {
     id: ticketID,
     nome: nome.value,
@@ -36,8 +33,6 @@ document.getElementById("ticketForm").addEventListener("submit", async (e) => {
   });
 
   alert("Ticket enviado com sucesso!\nO seu ID é: " + ticketID);
-
   document.getElementById("ticketForm").reset();
 });
 </script>
-
