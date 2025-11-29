@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Técnico – SmartHelp</title>
+  <title>SmartHelp – Administração</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>📋 Painel Técnico - Gestão de Tickets</header>
+<header>📋 Painel Técnico – Tickets</header>
 
 <div class="container">
   <h2>Lista de Tickets</h2>
@@ -22,7 +22,7 @@
         <th>Categoria</th>
         <th>Prioridade</th>
         <th>Estado</th>
-        <th>Ações</th>
+        <th>Ação</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -30,6 +30,7 @@
 </div>
 
 <script type="module">
+
   import { firebaseConfig } from "./firebase.js";
 
   import {
@@ -37,11 +38,7 @@
   } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 
   import {
-    getFirestore,
-    collection,
-    getDocs,
-    updateDoc,
-    doc
+    getFirestore, collection, getDocs, doc, updateDoc
   } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
   const app = initializeApp(firebaseConfig);
@@ -51,12 +48,12 @@
     const tbody = document.querySelector("#tabelaTickets tbody");
     tbody.innerHTML = "<tr><td colspan='6'>A carregar...</td></tr>";
 
-    const querySnapshot = await getDocs(collection(db, "tickets"));
+    const snap = await getDocs(collection(db, "tickets"));
+
     tbody.innerHTML = "";
 
-    querySnapshot.forEach((documento) => {
-      const t = documento.data();
-      const refID = documento.id; // ID real do Firestore
+    snap.forEach( (ticketDoc) => {
+      const t = ticketDoc.data();
 
       const linha = `
         <tr>
@@ -64,28 +61,28 @@
           <td>${t.nome}</td>
           <td>${t.categoria}</td>
           <td>${t.prioridade}</td>
-          <td><span class="estado ${t.estado.toLowerCase()}">${t.estado}</span></td>
+          <td>${t.estado}</td>
           <td>
-            <button onclick="fecharTicket('${refID}')">Fechar</button>
+            <button onclick="fecharTicket('${ticketDoc.id}')">Fechar</button>
           </td>
         </tr>
       `;
+
       tbody.innerHTML += linha;
     });
   }
 
-  window.fecharTicket = async function(refID) {
-    if (!confirm("Tem a certeza que deseja fechar este ticket?")) return;
-
-    const ticketRef = doc(db, "tickets", refID);
+  // Torna função acessível no HTML
+  window.fecharTicket = async function(idFirestore) {
+    const ticketRef = doc(db, "tickets", idFirestore);
 
     await updateDoc(ticketRef, {
       estado: "Fechado"
     });
 
     alert("Ticket fechado!");
-    carregarTickets();
-  }
+    location.reload();
+  };
 
   carregarTickets();
 </script>
