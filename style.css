@@ -1,1 +1,168 @@
+/* ==============================
+   ESTILO GERAL
+=================================*/
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background: #eef2f5;
+}
+
+/* ==============================
+   CONTAINER PRINCIPAL
+=================================*/
+
+.container {
+  width: 95%;
+  max-width: 650px;
+  margin: 40px auto;
+  background: white;
+  padding: 35px;
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==============================
+   TÍTULOS E TEXTOS
+=================================*/
+
+h1, h2 {
+  text-align: center;
+  font-weight: 700;
+  color: #1a73e8;
+}
+
+.subtitle {
+  text-align: center;
+  margin-top: -10px;
+  margin-bottom: 25px;
+  color: #555;
+  font-size: 15px;
+}
+
+/* ==============================
+   FORMULÁRIOS
+=================================*/
+
+label {
+  font-weight: 600;
+  margin-top: 18px;
+  display: block;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  margin-top: 6px;
+  font-size: 15px;
+  transition: 0.3s;
+  background: #fafafa;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: #1a73e8;
+  outline: none;
+  box-shadow: 0 0 6px rgba(26,115,232,0.3);
+}
+
+textarea {
+  height: 130px;
+  resize: vertical;
+}
+
+/* ==============================
+   BOTÃO
+=================================*/
+
+button {
+  width: 100%;
+  margin-top: 30px;
+  padding: 15px;
+  background: #1a73e8;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 17px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 600;
+}
+
+button:hover {
+  background: #155dc1;
+  transform: scale(1.02);
+}
+
+/* ==============================
+   ADMIN HEADER
+=================================*/
+
+header {
+  background: #1a73e8;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+/* ==============================
+   TABELA DE TICKETS
+=================================*/
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+th, td {
+  padding: 14px;
+  border-bottom: 1px solid #ddd;
+  font-size: 15px;
+}
+
+th {
+  background: #f2f6fc;
+  color: #1a73e8;
+  font-weight: bold;
+}
+
+tr:hover {
+  background: #f9fbff;
+}
+
+/* ==============================
+   ESTADOS DOS TICKETS
+=================================*/
+
+.estado {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: bold;
+}
+
+.aberto {
+  background: #ffdede;
+  color: #b30000;
+}
+
+.andamento {
+  background: #fff4cc;
+  color: #aa7a00;
+}
+
+.resolvido {
+  background: #d7ffd9;
+  color: #006b0b;
+}
 
