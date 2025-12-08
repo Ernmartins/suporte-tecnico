@@ -11,11 +11,6 @@
   <style>
     /* ESTILO EXCLUSIVO DO FORMULÁRIO DO INDEX */
 
-    body {
-      /* fundo escuro igual ao tema do CSS */
-      background: #0f172a;
-    }
-
     .form-wrapper {
       background: var(--bg-card);
       padding: 40px;
@@ -45,7 +40,6 @@
       height: 200px !important;
       line-height: 1.5;
       padding: 16px;
-      white-space: pre-line;
     }
 
     button {
@@ -53,36 +47,12 @@
       font-size: 18px;
       padding: 18px;
     }
-
-    .links-topo {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-      margin-bottom: 15px;
-    }
-
-    .links-topo a {
-      font-size: 13px;
-      text-decoration: none;
-      color: var(--blue-light);
-      opacity: 0.9;
-    }
-
-    .links-topo a:hover {
-      text-decoration: underline;
-    }
   </style>
 </head>
 
 <body>
 
 <div class="form-wrapper">
-  <div class="links-topo">
-    <a href="consultar-ticket.html">🔍 Consultar ticket</a>
-    <a href="painel.html">📋 Painel técnico</a>
-    <a href="dashboard.html">📊 Dashboard</a>
-  </div>
-
   <h1>📨 Abrir Ticket de Suporte</h1>
   <p class="subtitle">Explique-nos o problema com detalhe para podermos ajudar rapidamente</p>
 
@@ -143,41 +113,43 @@ Exemplos:
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // Referências aos campos (para evitar erros de variáveis não definidas)
-  const form = document.getElementById("ticketForm");
-  const nomeInput = document.getElementById("nome");
-  const emailInput = document.getElementById("email");
-  const telefoneInput = document.getElementById("telefone");
-  const categoriaInput = document.getElementById("categoria");
-  const prioridadeInput = document.getElementById("prioridade");
-  const descricaoInput = document.getElementById("descricao");
+  // Esperar o DOM carregar
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("ticketForm");
+    if (!form) {
+      console.error("Formulário #ticketForm não encontrado.");
+      return;
+    }
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-    // Buscar número atual de tickets
-    const snap = await getDocs(collection(db, "tickets"));
-    const total = snap.size + 1;
+      try {
+        // 1) Contar tickets atuais para gerar ID
+        const snap = await getDocs(collection(db, "tickets"));
+        const total = snap.size + 1;
+        const ticketID = "TCK-" + String(total).padStart(4, "0");
 
-    // Criar ID automático (ex.: TCK-0004)
-    const ticketID = "TCK-" + String(total).padStart(4, "0");
+        // 2) Guardar no Firestore
+        await addDoc(collection(db, "tickets"), {
+          id: ticketID,
+          nome: document.getElementById("nome").value,
+          email: document.getElementById("email").value,
+          telefone: document.getElementById("telefone").value,
+          categoria: document.getElementById("categoria").value,
+          prioridade: document.getElementById("prioridade").value,
+          descricao: document.getElementById("descricao").value,
+          estado: "Aberto",
+          data: new Date()
+        });
 
-    // Gravar no Firestore
-    await addDoc(collection(db, "tickets"), {
-      id: ticketID,
-      nome: nomeInput.value,
-      email: emailInput.value,
-      telefone: telefoneInput.value,
-      categoria: categoriaInput.value,
-      prioridade: prioridadeInput.value,
-      descricao: descricaoInput.value,
-      estado: "Aberto",
-      data: new Date()
+        alert("✅ Ticket enviado com sucesso!\n\nID do Ticket: " + ticketID);
+        form.reset();
+      } catch (err) {
+        console.error(err);
+        alert("Ocorreu um erro ao enviar o ticket. Tente novamente.");
+      }
     });
-
-    alert("✅ Ticket enviado com sucesso!\n\nID do Ticket: " + ticketID);
-
-    form.reset();
   });
 </script>
 
