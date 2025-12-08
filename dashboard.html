@@ -2,46 +2,100 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard – SmartHelp</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <title>Dashboard</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+<header>📊 Dashboard de Tickets</header>
+
 <div class="container">
-  <h1>📊 Dashboard</h1>
-  <canvas id="grafico1"></canvas>
+  <h2>Tickets por Categoria</h2>
+  <canvas id="catChart"></canvas>
 </div>
+
+<div class="container">
+  <h2>Tickets por Prioridade</h2>
+  <canvas id="prioChart"></canvas>
+</div>
+
+<div class="container">
+  <h2>Tickets por Estado</h2>
+  <canvas id="stateChart"></canvas>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script type="module">
   import { firebaseConfig } from "./firebase.js";
+
   import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
   import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  const snap = await getDocs(collection(db, "tickets"));
+  async function gerarDashboard() {
+    const snap = await getDocs(collection(db, "tickets"));
 
-  let abertos = 0, andamento = 0, resolvidos = 0;
+    let categorias = {};
+    let prioridades = {};
+    let estados = {};
 
-  snap.forEach(doc => {
-    const estado = doc.data().estado;
-    if (estado === "Aberto") abertos++;
-    if (estado === "Em andamento") andamento++;
-    if (estado === "Resolvido") resolvidos++;
-  });
+    snap.forEach(d => {
+      let t = d.data();
 
-  new Chart(document.getElementById("grafico1"), {
-    type: "pie",
-    data: {
-      labels: ["Abertos", "Em andamento", "Resolvidos"],
-      datasets: [{
-        data: [abertos, andamento, resolvidos],
-        backgroundColor: ["#f87171", "#facc15", "#4ade80"]
-      }]
-    }
-  });
+      // Contagem por categoria
+      categorias[t.categoria] = (categorias[t.categoria] || 0) + 1;
+
+      // Contagem por prioridade
+      prioridades[t.prioridade] = (prioridades[t.prioridade] || 0) + 1;
+
+      // Contagem por estado
+      estados[t.estado] = (estados[t.estado] || 0) + 1;
+    });
+
+    // Gráfico por Categoria
+    new Chart(catChart, {
+      type: "bar",
+      data: {
+        labels: Object.keys(categorias),
+        datasets: [{
+          label: "Tickets",
+          data: Object.values(categorias),
+          backgroundColor: "#38bdf8"
+        }]
+      }
+    });
+
+    // Gráfico por Prioridade
+    new Chart(prioChart, {
+      type: "pie",
+      data: {
+        labels: Object.keys(prioridades),
+        datasets: [{
+          data: Object.values(prioridades),
+          backgroundColor: ["#4ade80","#facc15","#f97316","#a855f7"]
+        }]
+      }
+    });
+
+    // 🔹 NOVO: Gráfico por Estado
+    new Chart(stateChart, {
+      type: "bar",
+      data: {
+        labels: Object.keys(estados),
+        datasets: [{
+          label: "Tickets",
+          data: Object.values(estados),
+          backgroundColor: ["#f87171", "#facc15", "#4ade80"]
+        }]
+      }
+    });
+  }
+
+  gerarDashboard();
 </script>
+
 </body>
 </html>
