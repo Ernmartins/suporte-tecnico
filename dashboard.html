@@ -2,43 +2,109 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>Painel Técnico</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Técnico — Gestão de Tickets</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>
-  📋 Painel Técnico
-  <button onclick="logout()" class="logout-btn">Logout</button>
-</header>
+<header>📋 Painel Técnico — Gestão de Tickets</header>
 
 <div class="container">
-  <h2>Menu</h2>
-  <a class="btn" href="admin.html">📑 Gerir Tickets</a>
-  <a class="btn" href="dashboard.html">📊 Dashboard</a>
+  <h2>Lista de Tickets</h2>
+
+  <table id="tabelaTickets">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Categoria</th>
+        <th>Prioridade</th>
+        <th>Estado</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
 </div>
 
 <script type="module">
   import { firebaseConfig } from "./firebase.js";
-  import { initializeApp } 
-    from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getAuth, onAuthStateChanged, signOut }
-    from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
+  import {
+    initializeApp
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+
+  import {
+    getFirestore, collection, getDocs, doc, updateDoc
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+  // Inicializar Firebase
   const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      window.location.href = "login.html";
-    }
-  });
+  async function carregarTickets() {
+    const tbody = document.querySelector("#tabelaTickets tbody");
+    tbody.innerHTML = "<tr><td colspan='6'>A carregar...</td></tr>";
 
-  window.logout = function () {
-    signOut(auth);
+    const querySnapshot = await getDocs(collection(db, "tickets"));
+
+    tbody.innerHTML = "";
+
+    querySnapshot.forEach((tDoc) => {
+      const t = tDoc.data();
+
+      tbody.innerHTML += `
+        <tr>
+          <td>${t.id}</td>
+          <td>${t.nome}</td>
+          <td>${t.categoria}</td>
+          <td>${t.prioridade}</td>
+          <td><span class="estado ${t.estado === 'Aberto' ? 'aberto' : 'resolvido'}">${t.estado}</span></td>
+          <td>
+            ${t.estado !== "Fechado"
+              ? `<button class="btn-close" onclick="fecharTicket('${tDoc.id}')">Fechar</button>`
+              : "—"}
+          </td>
+        </tr>`;
+    });
   }
+
+  // FECHAR TICKET
+  window.fecharTicket = async function(idFirebase) {
+    if (!confirm("Tem a certeza que deseja fechar este ticket?")) return;
+
+    const ref = doc(db, "tickets", idFirebase);
+
+    await updateDoc(ref, {
+      estado: "Fechado"
+    });
+
+    alert("Ticket fechado com sucesso!");
+
+    carregarTickets(); // atualizar tabela
+  };
+
+  carregarTickets();
 </script>
+
+<style>
+  .btn-close {
+    padding: 6px 12px;
+    background: #f87171;
+    border: none;
+    color: #0f172a;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .btn-close:hover {
+    background: #fca5a5;
+  }
+</style>
 
 </body>
 </html>
