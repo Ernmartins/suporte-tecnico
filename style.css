@@ -1,190 +1,46 @@
-/* ==============================
-   TEMA DARK MODERNO - SMARTHELP
-=================================*/
-
 :root {
-  --bg-dark: #0f172a;
-  --bg-card: #1e293b;
-  --blue: #38bdf8;
-  --blue-light: #7dd3fc;
-  --text-light: #f1f5f9;
-  --text-muted: #94a3b8;
-  --success: #4ade80;
-  --warning: #facc15;
-  --danger: #f87171;
+  --blue: #1a73e8;
+  --bg: #f1f5fa;
+  --bg-card: #ffffff;
+  --text-muted: #666;
+  --radius: 12px;
 }
-
-/* ==============================
-   BODY
-=================================*/
 
 body {
+  background: var(--bg);
   margin: 0;
   font-family: "Segoe UI", Arial, sans-serif;
-  background: var(--bg-dark);
-  color: var(--text-light);
-}
-
-/* ==============================
-   CONTAINER
-=================================*/
-
-.container {
-  width: 95%;
-  max-width: 650px;
-  margin: 40px auto;
-  background: var(--bg-card);
-  padding: 35px;
-  border-radius: 18px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-  animation: fadeIn 0.8s ease-in-out;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* ==============================
-   TÍTULOS
-=================================*/
-
-h1, h2 {
-  text-align: center;
-  font-weight: 700;
-  color: var(--blue);
-}
-
-/* ==============================
-   SUBTÍTULOS
-=================================*/
-
-.subtitle {
-  text-align: center;
-  margin-top: -10px;
-  margin-bottom: 25px;
-  color: var(--text-muted);
-  font-size: 15px;
-}
-
-/* ==============================
-   FORMULÁRIOS
-=================================*/
-
-label {
-  font-weight: 600;
-  margin-top: 18px;
-  display: block;
+  padding-bottom: 50px;
 }
 
 input, select, textarea {
   width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: 1px solid #334155;
-  margin-top: 6px;
+  padding: 14px;
+  border-radius: var(--radius);
+  border: 1px solid #ccc;
   font-size: 15px;
-  transition: 0.3s;
-  background: #0f172a;
-  color: var(--text-light);
+  margin-top: 6px;
+  transition: 0.2s;
 }
 
 input:focus, select:focus, textarea:focus {
   border-color: var(--blue);
   outline: none;
-  box-shadow: 0 0 6px rgba(56,189,248,0.6);
+  box-shadow: 0 0 8px rgba(26,115,232,0.3);
 }
-
-textarea {
-  height: 130px;
-  resize: vertical;
-}
-
-/* ==============================
-   BOTÃO
-=================================*/
 
 button {
   width: 100%;
-  margin-top: 30px;
-  padding: 15px;
   background: var(--blue);
-  color: #0f172a;
   border: none;
-  border-radius: 12px;
-  font-size: 17px;
+  color: white;
+  padding: 15px;
+  border-radius: var(--radius);
   cursor: pointer;
-  transition: 0.3s;
-  font-weight: 700;
+  font-size: 17px;
+  transition: 0.2s;
 }
 
 button:hover {
-  background: var(--blue-light);
-  transform: scale(1.03);
-}
-
-/* ==============================
-   ADMIN HEADER
-=================================*/
-
-header {
-  background: var(--bg-card);
-  color: var(--blue-light);
-  padding: 20px;
-  text-align: center;
-  font-size: 24px;
-  font-weight: bold;
-  border-bottom: 2px solid var(--blue);
-}
-
-/* ==============================
-   TABELA DE TICKETS
-=================================*/
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  background: var(--bg-card);
-}
-
-th, td {
-  padding: 14px;
-  border-bottom: 1px solid #334155;
-  font-size: 15px;
-}
-
-th {
-  background: #1e293b;
-  color: var(--blue-light);
-  font-weight: bold;
-}
-
-tr:hover {
-  background: #0f172a;
-}
-
-/* ==============================
-   ESTADOS DOS TICKETS
-=================================*/
-
-.estado {
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-weight: bold;
-}
-
-.aberto {
-  background: var(--danger);
-  color: #0f172a;
-}
-
-.andamento {
-  background: var(--warning);
-  color: #0f172a;
-}
-
-.resolvido {
-  background: var(--success);
-  color: #0f172a;
+  background: #0b54b3;
 }
