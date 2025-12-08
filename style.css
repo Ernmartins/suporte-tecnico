@@ -1,21 +1,60 @@
+/* =========================
+   TEMA SMARTHELP (CLARO)
+========================= */
+
 :root {
   --blue: #1a73e8;
   --blue-dark: #0b54b3;
   --bg: #f1f5fa;
   --bg-card: #ffffff;
-  --text-muted: #666;
+  --text: #1f2933;
+  --text-muted: #6b7280;
   --radius: 12px;
 }
 
-/* Base */
+/* BODY */
+
 body {
   background: var(--bg);
   margin: 0;
   font-family: "Segoe UI", Arial, sans-serif;
+  color: var(--text);
   padding-bottom: 50px;
 }
 
-/* Cartões / containers */
+/* NAV SUPERIOR */
+
+.top-nav {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 12px 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.top-nav a {
+  text-decoration: none;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #e5f0ff;
+  color: var(--blue-dark);
+  font-size: 14px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.top-nav a:hover {
+  background: var(--blue);
+  color: #ffffff;
+}
+
+/* CONTAINER GERAL */
+
 .container,
 .form-wrapper {
   width: 95%;
@@ -23,25 +62,35 @@ body {
   margin: 40px auto;
   background: var(--bg-card);
   padding: 30px 35px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.10);
+  animation: fadeIn 0.6s ease-in-out;
 }
 
-/* Títulos */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* TÍTULOS */
+
 h1, h2 {
   text-align: center;
-  margin-top: 0;
+  font-weight: 700;
   color: var(--blue);
+  margin-top: 0;
 }
 
 .subtitle {
   text-align: center;
-  color: var(--text-muted);
-  margin-top: -10px;
+  margin-top: -8px;
   margin-bottom: 25px;
+  color: var(--text-muted);
+  font-size: 15px;
 }
 
-/* Formulários */
+/* FORMULÁRIOS */
+
 label {
   font-weight: 600;
   margin-top: 18px;
@@ -52,10 +101,11 @@ input, select, textarea {
   width: 100%;
   padding: 14px;
   border-radius: var(--radius);
-  border: 1px solid #ccc;
+  border: 1px solid #d1d5db;
   font-size: 15px;
   margin-top: 6px;
   transition: 0.2s;
+  background: #f9fafb;
 }
 
 input:focus, select:focus, textarea:focus {
@@ -69,7 +119,8 @@ textarea {
   resize: vertical;
 }
 
-/* Botões */
+/* BOTÕES */
+
 button {
   width: 100%;
   background: var(--blue);
@@ -79,102 +130,90 @@ button {
   border-radius: var(--radius);
   cursor: pointer;
   font-size: 17px;
-  transition: 0.2s;
   font-weight: 600;
+  transition: 0.2s;
+  margin-top: 24px;
 }
 
 button:hover {
   background: var(--blue-dark);
+  transform: translateY(-1px);
 }
 
-/* Header (painel/dashboard) */
+/* HEADER PAINEL / DASHBOARD */
+
 header {
-  background: var(--bg-card);
-  padding: 15px 25px;
-  border-bottom: 2px solid var(--blue);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  background: #ffffff;
+  color: var(--blue-dark);
+  padding: 18px 20px;
+  text-align: center;
+  font-size: 22px;
   font-weight: 700;
-  color: var(--blue);
+  border-bottom: 2px solid #e5e7eb;
 }
 
-/* Tabelas (painel) */
+/* TABELAS */
+
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 th, td {
-  padding: 12px;
-  border-bottom: 1px solid #ddd;
+  padding: 12px 10px;
+  border-bottom: 1px solid #e5e7eb;
   font-size: 14px;
 }
 
 th {
-  background: #e8f0fe;
-  color: #174ea6;
+  background: #eef2ff;
+  color: var(--blue-dark);
+  font-weight: 700;
 }
 
 tr:hover {
-  background: #f5f7fb;
+  background: #f9fafb;
 }
 
-/* Estado do ticket */
+/* ESTADOS DOS TICKETS */
+
 .estado {
-  padding: 6px 12px;
-  border-radius: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
   font-weight: 600;
-  font-size: 13px;
+  font-size: 12px;
 }
 
-.estado.aberto {
-  background: #fde68a;
+.aberto {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.andamento {
+  background: #fef3c7;
   color: #92400e;
 }
 
-.estado.andamento {
-  background: #bfdbfe;
-  color: #1d4ed8;
-}
-
-.estado.resolvido,
-.estado.fechado {
-  background: #bbf7d0;
+.resolvido,
+.fechado {
+  background: #dcfce7;
   color: #166534;
 }
 
-/* Botões pequenos no painel */
-.btnSalvar, .btn-close {
-  width: auto;
-  padding: 6px 12px;
-  font-size: 13px;
-  margin-top: 5px;
-}
+/* BOTÃO FECHAR TICKET (caso uses em dashboard) */
 
 .btn-close {
+  padding: 6px 12px;
   background: #f97373;
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 13px;
 }
 
 .btn-close:hover {
-  background: #fb9a9a;
-}
-
-/* Ligações de navegação no index */
-.nav-links {
-  margin-top: 30px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-}
-
-.nav-links a {
-  text-decoration: none;
-  flex: 1 1 180px;
-}
-
-.nav-links a button {
-  width: 100%;
+  background: #fb9c9c;
 }
