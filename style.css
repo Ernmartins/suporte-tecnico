@@ -6,11 +6,46 @@
   --radius: 12px;
 }
 
+/* Fundo geral */
 body {
   background: var(--bg);
   margin: 0;
   font-family: "Segoe UI", Arial, sans-serif;
   padding-bottom: 50px;
+}
+
+/* Cartão central */
+.container,
+.form-wrapper {
+  width: 95%;
+  max-width: 800px;
+  margin: 40px auto;
+  background: var(--bg-card);
+  padding: 35px;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+/* Títulos */
+h1, h2 {
+  text-align: center;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.subtitle {
+  text-align: center;
+  margin-top: -5px;
+  margin-bottom: 25px;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+/* Formulários */
+label {
+  display: block;
+  margin-top: 18px;
+  font-weight: 600;
 }
 
 input, select, textarea {
@@ -29,6 +64,12 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 8px rgba(26,115,232,0.3);
 }
 
+textarea {
+  min-height: 130px;
+  resize: vertical;
+}
+
+/* Botões */
 button {
   width: 100%;
   background: var(--blue);
@@ -39,8 +80,60 @@ button {
   cursor: pointer;
   font-size: 17px;
   transition: 0.2s;
+  margin-top: 20px;
 }
 
 button:hover {
   background: #0b54b3;
+}
+
+/* Header do painel */
+header {
+  background: #ffffff;
+  border-bottom: 1px solid #ddd;
+  padding: 15px 25px;
+  font-size: 20px;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Tabela */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+}
+
+th {
+  background: #e8f0fe;
+  color: #1a73e8;
+}
+
+/* Estado dos tickets */
+.estado {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.aberto { background:#fce8e6; color:#c5221f; }
+.andamento { background:#fff4ce; color:#b06c00; }
+.resolvido,
+.fechado { background:#e6f4ea; color:#137333; }
+
+/* Botão pequeno no painel */
+.btnSalvar, .btnLogout {
+  width: auto;
+  padding: 8px 14px;
+  font-size: 14px;
+  margin-top: 0;
 }
