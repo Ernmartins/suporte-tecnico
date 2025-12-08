@@ -2,15 +2,14 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
-  <title>SmartHelp – Login Técnico</title>
+  <title>Login Técnico</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="container">
+<div class="form-wrapper">
   <h1>🔐 Login Técnico</h1>
-  <p class="subtitle">Acesso restrito aos técnicos</p>
 
   <form id="loginForm">
     <label>Email</label>
@@ -25,19 +24,25 @@
 
 <script type="module">
   import { firebaseConfig } from "./firebase.js";
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import { initializeApp } 
+    from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword }
+    from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
 
   document.getElementById("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    const email = document.getElementById("email").value;
+    const pass = document.getElementById("password").value;
+
     try {
-      await signInWithEmailAndPassword(auth, email.value, password.value);
-      window.location.href = "admin.html";  
-    } catch (err) {
-      alert("⚠ Erro no Login: " + err.message);
+      await signInWithEmailAndPassword(auth, email, pass);
+      window.location.href = "painel.html";
+    } catch(err) {
+      alert("Erro ao fazer login: " + err.message);
     }
   });
 </script>
