@@ -1,76 +1,81 @@
-diff --git a/consultar-ticket.html b/consultar-ticket.html
-index 3dc26e76eed7f0c061b33b76a00eb5a9043ad6a5..fc1dd9704d98f3879ab8ce7a51f9980398bc4c82 100644
---- a/consultar-ticket.html
-+++ b/consultar-ticket.html
-@@ -13,68 +13,68 @@
-   <a href="consultar-ticket.html">Consultar ticket</a>
-   <a href="login.html">Login técnico</a>
-   <a href="dashboard.html">Dashboard</a>
- </nav>
- 
- <div class="container">
-   <h1>🔍 Consultar Ticket</h1>
-   <p class="subtitle">Introduza o ID do ticket para ver o estado</p>
- 
-   <label>Introduza o ID do Ticket</label>
-   <input type="text" id="ticketID" placeholder="Ex: TCK-0004">
- 
-   <button onclick="procurar()">Procurar</button>
- 
-   <div id="resultado" style="margin-top:20px;"></div>
- </div>
- 
- <script type="module">
-   import { firebaseConfig } from "./firebase.js";
- 
-   import { 
-     initializeApp 
-   } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
- 
-   import { 
--    getFirestore, collection, getDocs 
-+    getFirestore, collection, getDocs, query, where 
-   } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
- 
-   const app = initializeApp(firebaseConfig);
-   const db  = getFirestore(app);
- 
-   window.procurar = async function () {
-     const id  = document.getElementById("ticketID").value.trim();
-     const div = document.getElementById("resultado");
- 
-     if (!id) {
-       div.innerHTML = "<p style='color:red;'>Introduza um ID.</p>";
-       return;
-     }
- 
-     div.innerHTML = "A procurar...";
- 
--    const snap = await getDocs(collection(db, "tickets"));
-+    const snap = await getDocs(query(collection(db, "tickets"), where("id", "==", id)));
- 
-     let encontrado = null;
-     snap.forEach(doc => {
--      if (doc.data().id === id) encontrado = doc.data();
-+      encontrado = doc.data();
-     });
- 
-     if (!encontrado) {
-       div.innerHTML = "<p style='color:red;'>❌ Ticket não encontrado.</p>";
-       return;
-     }
- 
-     div.innerHTML = `
-       <h3>Resultado</h3>
-       <p><b>ID:</b> ${encontrado.id}</p>
-       <p><b>Nome:</b> ${encontrado.nome}</p>
-       <p><b>Estado:</b> ${encontrado.estado}</p>
-       <p><b>Categoria:</b> ${encontrado.categoria}</p>
-       <p><b>Prioridade:</b> ${encontrado.prioridade}</p>
-       <p><b>Descrição:</b> ${encontrado.descricao}</p>
-     `;
-   };
- </script>
- 
- </body>
- </html>
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartHelp – Consultar Ticket</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<nav class="top-nav">
+  <a href="index.html">Abrir ticket</a>
+  <a href="consultar-ticket.html">Consultar ticket</a>
+  <a href="login.html">Login técnico</a>
+  <a href="dashboard.html">Dashboard</a>
+</nav>
+
+<div class="container">
+  <h1>🔍 Consultar Ticket</h1>
+  <p class="subtitle">Introduza o ID do ticket para ver o estado</p>
+
+  <label>Introduza o ID do Ticket</label>
+  <input type="text" id="ticketID" placeholder="Ex: TCK-0004">
+
+  <button onclick="procurar()">Procurar</button>
+
+  <div id="resultado" style="margin-top:20px;"></div>
+</div>
+
+<script type="module">
+  import { firebaseConfig } from "./firebase.js";
+
+  import {
+    initializeApp
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+
+  import {
+    getFirestore, collection, getDocs, query, where
+  } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  window.procurar = async function () {
+    const id  = document.getElementById("ticketID").value.trim();
+    const div = document.getElementById("resultado");
+
+    if (!id) {
+      div.innerHTML = "<p style='color:red;'>Introduza um ID.</p>";
+      return;
+    }
+
+    div.innerHTML = "A procurar...";
+
+    const snap = await getDocs(query(collection(db, "tickets"), where("id", "==", id)));
+
+    let encontrado = null;
+    snap.forEach(doc => {
+      encontrado = doc.data();
+    });
+
+    if (!encontrado) {
+      div.innerHTML = "<p style='color:red;'>❌ Ticket não encontrado.</p>";
+      return;
+    }
+
+    div.innerHTML = `
+      <h3>Resultado</h3>
+      <p><b>ID:</b> ${encontrado.id}</p>
+      <p><b>Nome:</b> ${encontrado.nome}</p>
+      <p><b>Estado:</b> ${encontrado.estado}</p>
+      <p><b>Categoria:</b> ${encontrado.categoria}</p>
+      <p><b>Prioridade:</b> ${encontrado.prioridade}</p>
+      <p><b>Descrição:</b> ${encontrado.descricao}</p>
+    `;
+  };
+</script>
+
+</body>
+</html>
